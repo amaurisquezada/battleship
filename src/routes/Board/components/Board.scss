@@ -1,0 +1,29 @@
+.board-wrapper {
+  width: 100.31vh;
+  height: 100vh;
+  border: 1px solid black;
+}
+
+.cell {
+  width: 10vh;
+  height: 10vh;
+  border: 1px solid black;
+  float: left;
+}
+
+.eligible-cell:hover {
+  cursor: pointer;
+  opacity: .3;
+}
+
+.eligible-cell {
+  background: url("./assets/ocean.jpg") 100% 100% no-repeat;
+}
+
+.hit-cell {
+  background-color: red;
+}
+
+.missed-cell {
+  background-color: grey;
+}

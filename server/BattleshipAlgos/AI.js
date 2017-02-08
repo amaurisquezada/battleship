@@ -11,56 +11,56 @@ const regularAI = (settings = { normalVariation: true, normalAttack: true, shipR
     return res
   }
 
-  const randomCoordinate = (shipSize, board, normalVariation) => {
-      let eligible = allZeros(board)
-      let location = eligible[Math.floor(Math.random() * eligible.length)]
-      let nc = neighboringSpace(location[0], location[1], board)
-      let hSpace = nc[0] + nc[1]
-      let vSpace = nc[2] + nc[3]
+  const randomCoordinate = (shipSize, board, normalVariation = true) => {
+    let eligible = allZeros(board)
+    let location = eligible[Math.floor(Math.random() * eligible.length)]
+    let nc = neighboringSpace(location[0], location[1], board)
+    let hSpace = nc[0] + nc[1]
+    let vSpace = nc[2] + nc[3]
 
-      while (hSpace < shipSize - 1 && vSpace < shipSize - 1 && eligible.length) {
-        eligible.splice(eligible.indexOf(location), 1)
-        location = eligible[Math.floor(Math.random() * eligible.length)]
-        nc = neighboringSpace(location[0], location[1], board)
-        hSpace = nc[0] + nc[1]
-        vSpace = nc[2] + nc[3]
-      }
-      return [location, nc]
-    },
-
-    surroundingCells = (y, x, board) => {
-      let sc = { left:'', right: '', above: '', below: '' }
-      sc.left = x > 0 ? board[y][x - 1] : null
-      sc.right = x < 9 ? board[y][x + 1] : null
-      sc.above = y > 0 ? board[y - 1][x] : null
-      sc.below = y < 9 ? board[y + 1][x] : null
-      return sc
-    },
-
-    neighboringSpace = (y, x, board) => {
-      let spaceLeft = 0
-      let spaceAbove = 0
-      let spaceRight = 0
-      let spaceBelow = 0
-
-      for (let i = x - 1; i >= 0 && board[y][i] === 0; i--) {
-        spaceLeft++
-      }
-
-      for (let i = x + 1; i <= board.length - 1 && board[y][i] === 0; i++) {
-        spaceRight++
-      }
-
-      for (let i = y - 1; i >= 0 && board[i][x] === 0; i--) {
-        spaceAbove++
-      }
-
-      for (let i = y + 1; i <= board.length - 1 && board[i][x] === 0; i++) {
-        spaceBelow++
-      }
-
-      return [spaceLeft, spaceRight, spaceAbove, spaceBelow]
+    while (hSpace < shipSize - 1 && vSpace < shipSize - 1 && eligible.length) {
+      eligible.splice(eligible.indexOf(location), 1)
+      location = eligible[Math.floor(Math.random() * eligible.length)]
+      nc = neighboringSpace(location[0], location[1], board)
+      hSpace = nc[0] + nc[1]
+      vSpace = nc[2] + nc[3]
     }
+    return [location, nc]
+  }
+
+  const surroundingCells = (y, x, board) => {
+    let sc = { left:'', right: '', above: '', below: '' }
+    sc.left = x > 0 ? board[y][x - 1] : null
+    sc.right = x < 9 ? board[y][x + 1] : null
+    sc.above = y > 0 ? board[y - 1][x] : null
+    sc.below = y < 9 ? board[y + 1][x] : null
+    return sc
+  }
+
+  const neighboringSpace = (y, x, board) => {
+    let spaceLeft = 0
+    let spaceAbove = 0
+    let spaceRight = 0
+    let spaceBelow = 0
+
+    for (let i = x - 1; i >= 0 && board[y][i] === 0; i--) {
+      spaceLeft++
+    }
+
+    for (let i = x + 1; i <= board.length - 1 && board[y][i] === 0; i++) {
+      spaceRight++
+    }
+
+    for (let i = y - 1; i >= 0 && board[i][x] === 0; i--) {
+      spaceAbove++
+    }
+
+    for (let i = y + 1; i <= board.length - 1 && board[i][x] === 0; i++) {
+      spaceBelow++
+    }
+
+    return [spaceLeft, spaceRight, spaceAbove, spaceBelow]
+  }
 
   return {
     allZeros: (board) => {
