@@ -1,3 +1,5 @@
+import _ from "lodash"
+
 const regularAI = (settings = { normalVariation: true, normalAttack: true, shipReveal: true }) => {
   const normalVaritaion = settings.normalVaritaion
   const normalAttack = settings.normalAttack
@@ -13,14 +15,14 @@ const regularAI = (settings = { normalVariation: true, normalAttack: true, shipR
 
   const randomCoordinate = (shipSize, board, normalVariation = true) => {
     let eligible = allZeros(board)
-    let location = eligible[Math.floor(Math.random() * eligible.length)]
+    let location = _.shuffle(eligible).pop()
     let nc = neighboringSpace(location[0], location[1], board)
     let hSpace = nc[0] + nc[1]
     let vSpace = nc[2] + nc[3]
 
     while (hSpace < shipSize - 1 && vSpace < shipSize - 1 && eligible.length) {
-      eligible.splice(eligible.indexOf(location), 1)
-      location = eligible[Math.floor(Math.random() * eligible.length)]
+      eligible = _.reject(eligible, location)
+      location = _.shuffle(eligible).pop()
       nc = neighboringSpace(location[0], location[1], board)
       hSpace = nc[0] + nc[1]
       vSpace = nc[2] + nc[3]
@@ -63,13 +65,6 @@ const regularAI = (settings = { normalVariation: true, normalAttack: true, shipR
   }
 
   return {
-    allZeros: (board) => {
-      let res = board.reduce((final, column, y) => {
-        column.forEach((row, x) => { if (row === 0) final.push([y, x]) })
-        return final
-      }, [])
-      return res
-    },
     initialBoard: (ships = [5, 4, 3, 2, 1]) => {
       let workingBoard = [
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -229,3 +224,5 @@ const regularAI = (settings = { normalVariation: true, normalAttack: true, shipR
     }
   }
 }
+
+console.log(regularAI().initialBoard())
