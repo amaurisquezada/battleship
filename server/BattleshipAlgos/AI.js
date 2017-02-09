@@ -1,12 +1,22 @@
-import _ from "lodash"
+import _ from 'lodash'
 
 const regularAI = (settings = { normalVariation: true, normalAttack: true, shipReveal: true }) => {
   const normalVaritaion = settings.normalVaritaion
   const normalAttack = settings.normalAttack
   const shipReveal = settings.shipReveal
 
+  const priorityOrder = (ships) => {
+    const shipToSearch = _(ships)
+        .pickBy((val, key) => val != key && val != 0)
+        .keys()
+        .filter((val, i, arr) => val === _.min(arr))
+        .value()
+
+    return _.toInteger(shipToSearch[0])
+  }
+
   const allZeros = (board) => {
-    let res = board.reduce((final, column, y) => {
+    const res = board.reduce((final, column, y) => {
       column.forEach((row, x) => { if (row === 0) final.push([y, x]) })
       return final
     }, [])
@@ -79,18 +89,18 @@ const regularAI = (settings = { normalVariation: true, normalAttack: true, shipR
           [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
 
       const shipPlacement = (shipSize, board) => {
-        let rc = randomCoordinate(shipSize, board)
-        let coordinates = rc[0]
-        let y = coordinates[0]
-        let x = coordinates[1]
-        let nc = rc[1]
-        let hSpace = nc[0] + nc[1]
-        let vSpace = nc[2] + nc[3]
+        const rc = randomCoordinate(shipSize, board)
+        const coordinates = rc[0]
+        const y = coordinates[0]
+        const x = coordinates[1]
+        const nc = rc[1]
+        const hSpace = nc[0] + nc[1]
+        const vSpace = nc[2] + nc[3]
         let direction
 
         if (board[y][x] === 0 && shipSize === 1) { board[y][x] = shipSize; return board }
         if (hSpace >= shipSize - 1 && vSpace >= shipSize - 1) {
-          direction = Math.floor(Math.random() * 2) === 0 ? 'VERTICAL' : 'HORIZONTAL'
+          direction = _.sample(['VERTICAL', 'HORIZONTAL'])
         } else if (hSpace >= shipSize - 1) {
           direction = 'HORIZONTAL'
         } else if (vSpace >= shipSize - 1) {
@@ -118,7 +128,7 @@ const regularAI = (settings = { normalVariation: true, normalAttack: true, shipR
 
             while (counter--) {
               if (spaceLeft && spaceRight) {
-                if (Math.floor(Math.random() * 2) === 0) {
+                if (_.sample([0, 1])) {
                   board[y][x - 1 - fromLeft] = shipSize
                   fromLeft++
                   spaceLeft--
@@ -158,7 +168,7 @@ const regularAI = (settings = { normalVariation: true, normalAttack: true, shipR
 
             while (count--) {
               if (spaceAbove && spaceBelow) {
-                if (Math.floor(Math.random() * 2) === 0) {
+                if (_.sample([0, 1])) {
                   board[y - 1 - fromAbove][x] = shipSize
                   fromAbove++
                   spaceAbove--
@@ -190,39 +200,28 @@ const regularAI = (settings = { normalVariation: true, normalAttack: true, shipR
     },
 
     makeGuess: (targetingBoard, ships = { 5:5, 4:4, 3:3, 2:2, 1:1 }) => {
-      let shipSizes = Object.keys(ships)
-      let shipCount = { ...ships }
+      const shipToSearch = priorityOrder(ships)
       let board = targetingBoard.slice()
-      let searching = 0
-      let surrounding
-
-      for (let i = 0; i < shipSizes.length; i++) {
-        if (shipCount[shipSizes[i]] < shipSizes[i] && shipSizes[i] !== 0) {
-          searching = shipSizes[i]
-          break
-        }
-      }
-
-      if (!searching) {
-        let eligible = allZeros(board)
-
-        return eligible[Math.floor(Math.random() * eligible.length)]
-      } else {
-        for (let y = 0; y < board.length; y++) {
-          for (let x = 0; x < board[y].length; x++) {
-            if (board[y][x] === searching) {
-              surrounding = surroundingCells(y, x, targetingBoard)
-              for (let j = 0; j < Object.keys(surrounding); j++) {
-                if (surrounding[Object.keys(surrounding)[j]] === searching) {
-
-                }
-              }
-            }
-          }
-        }
+      if (!shipToSearch) {
+        const guess = _.shuffle(allZeros(targetingBoard)).pop()
+        board[guess[0]][guess[1]] = 'X'
+        return board
       }
     }
   }
 }
 
-console.log(regularAI().initialBoard())
+let wb = [
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+          [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+
+console.log(regularAI().makeGuess(wb))
+
